@@ -74,9 +74,6 @@ for file in *_rsa.pub; do
     echo "Adding user $user"
     # create user
     sudo useradd -m -G $main_group,docker $user -s /bin/bash
-    # -m -p $(openssl passwd -1 $user) $user -s /bin/bash
-    # delete password
-    # sudo passwd -d $user
     # add user's public key
     ssh_dir="/home/$user/.ssh"
     sudo mkdir $ssh_dir
@@ -88,6 +85,6 @@ for file in *_rsa.pub; do
     sudo chown $user:$main_group $ssh_dir
     sudo chown $user:$main_group $ssh_auth
     # add user to SGE group
-    sudo -u sgeadmin -i qconf -am $user
+    # sudo -u sgeadmin -i qconf -am $user
 done
-# FINALLY: ami-4610f93f
+# FINALLY: ami-?
