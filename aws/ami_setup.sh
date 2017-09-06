@@ -73,7 +73,7 @@ for file in *_rsa.pub; do
     user=${file//_rsa.pub/}
     echo "Adding user $user"
     # create user
-    sudo useradd -m -G $main_group,docker 
+    sudo useradd -m -G $main_group,docker $user -s /bin/bash
     # -m -p $(openssl passwd -1 $user) $user -s /bin/bash
     # delete password
     # sudo passwd -d $user
