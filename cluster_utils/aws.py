@@ -3,9 +3,9 @@ from . import utils
 from subprocess import check_call
 
 
-def run_job(cmd, job_name_prefix='', image='neuro-dl', python_path=None,
-            path=None, workdir=None, docker_engine='nvidia-docker'):
-    """Run a job at AWS
+def run_job(cmd, job_name_prefix='', image='miykael/nipype_level4:latest',
+            python_path=None, path=None, workdir=None, docker_engine='docker'):
+    """Run a job at AWS using SGE provided by CfnCluster
 
     Parameters
     ----------
@@ -26,6 +26,9 @@ def run_job(cmd, job_name_prefix='', image='neuro-dl', python_path=None,
         path to start at computing nodes
     docker_engine: str
         'docker' or 'nvidia-docker'
+
+    Examples
+    ----------
     """
     user_id, user_name, user_gid = utils.get_system_names_ids(user_id=None)
     if workdir is None:
@@ -39,6 +42,8 @@ def run_job(cmd, job_name_prefix='', image='neuro-dl', python_path=None,
     cmd_sh = utils.write_sh_script(cmd, '{}_cmd.sh'.format(job_name))
     # the second script is used to launch docker on a node
     image = utils.check_image(image)
+
+    # TODO check the workdir
     job_cmd = [
         '{} run {} /bin/bash -c "{}"'.format(docker_engine, image, cmd_sh),
         '--user {}:{}'.format(user_id, user_gid),

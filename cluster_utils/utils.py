@@ -10,8 +10,8 @@ import argparse
 
 
 IMAGES = ['neuro-dl:latest', 'neuroimaging:latest']
-GROUP_NAME = 'ml_group'
-SHARED_DIR_PATH = '/cobrain/groups/ml_group'
+GROUP_NAME = 'main_group'
+SHARED_DIR_PATH = '/data'
 SGE_SH_DIR = '.sge_sh'
 YAML_DIR = '.yaml'
 
@@ -124,13 +124,9 @@ def get_standard_parser():
     parser = argparse.ArgumentParser()
 
     # Positional mandatory arguments
-    parser.add_argument("-c", "--cpu", type=int,
-                        help='Number of CPU cores to allocate')
-    parser.add_argument("-g", "--gpu", type=int,
-                        help='Number of GPU to allocate')
-    parser.add_argument("-r", "--ram", type=int, help='GB of RAM to allocate')
     parser.add_argument("-i", "--image", type=str, help='Docker image to use')
-    parser.add_argument("-e", "--engine", type=str, help='Kubernetes or SGE')
+    parser.add_argument("-e", "--docker_engine", type=str,
+                        help='docker or nvidia-docker')
     parser.add_argument(
         "-p", "--path", type=str,
         help='path to pass to container, i.e. "/home/mibel/freesurfer"')
