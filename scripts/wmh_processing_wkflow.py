@@ -99,21 +99,35 @@ infosource.iterables = [('site_top', site_top_list),
 # infosource = ni_engine.Node(ni_io.DataGrabber(), name='infosource')
 
 # SelectFiles
+
+# t1_file = opj('wmh', '{site_top}', '{site_bot}', '{subject_id}', 'orig', '3DT1.nii.gz')
+# t1_mask = opj('wmh', '{site_top}', '{site_bot}', '{subject_id}', 'orig', '3DT1_mask.nii.gz')
+# t1_file_alt = opj('wmh', '{site_top}', '{site_bot}', '{subject_id}', 'orig', 'T1.nii.gz')
+# t1_alt_mask = opj('wmh', '{site_top}', '{site_bot}', '{subject_id}', 'orig', 'T1_mask.nii.gz')
+# flair_file = opj('wmh', '{site_top}', '{site_bot}',
+#                  '{subject_id}', 'orig', 'FLAIR.nii.gz')
+# lesion_file = opj('wmh', '{site_top}', '{site_bot}',
+#                   '{subject_id}', 'wmh.nii.gz')
+#
+# templates = {'t1': t1_file,
+#              't1_mask': t1_mask,
+#              't1_alt': t1_file_alt,
+#              't1_alt_mask': t1_alt_mask,
+#              'flair': flair_file,
+#              'lesion': lesion_file}
+
 t1_file = opj('wmh', '{site_top}', '{site_bot}', '{subject_id}', 'orig', '3DT1.nii.gz')
-t1_mask = opj('wmh', '{site_top}', '{site_bot}', '{subject_id}', 'orig', '3DT1_mask.nii.gz')
 t1_file_alt = opj('wmh', '{site_top}', '{site_bot}', '{subject_id}', 'orig', 'T1.nii.gz')
-t1_alt_mask = opj('wmh', '{site_top}', '{site_bot}', '{subject_id}', 'orig', 'T1_mask.nii.gz')
 flair_file = opj('wmh', '{site_top}', '{site_bot}',
                  '{subject_id}', 'orig', 'FLAIR.nii.gz')
 lesion_file = opj('wmh', '{site_top}', '{site_bot}',
                   '{subject_id}', 'wmh.nii.gz')
 
 templates = {'t1': t1_file,
-             't1_mask': t1_mask,
              't1_alt': t1_file_alt,
-             't1_alt_mask': t1_alt_mask,
              'flair': flair_file,
              'lesion': lesion_file}
+
 selectfiles = ni_engine.Node(ni_io.SelectFiles(templates,
                                                base_directory=DATA_ROOT,
                                                sort_filelist=True),
