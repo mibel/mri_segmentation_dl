@@ -36,7 +36,7 @@ pip install pandas==0.20.2
 pip install matplotlib==2.0.2
 pip install seaborn==0.7.0
 pip install nibabel==2.1.0
-pip install nipype==0.13.1
+# pip install nipype==0.13.1
 pip install tqdm==4.14.0
 pip install scikit-image==0.13.0
 pip install snakemake==3.13.3
@@ -49,7 +49,9 @@ echo "PATH=/miniconda3/bin:\$PATH" | sudo tee -a /etc/profile
 # setup users
 main_group=main_group
 sudo groupadd $main_group
-cd ../public_keys
+
+script_dir="$( cd "$( dirname "$0" )" && pwd )"
+cd $script_dir../public_keys
 shopt -s nullglob
 for file in *_rsa.pub; do
     user=${file//_rsa.pub/}
