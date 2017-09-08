@@ -10,11 +10,11 @@ import nipype.interfaces.utility as ni_util # IdentityInterface
 import nipype.interfaces.io as ni_io # SelectFiles, DataSink
 import nipype.pipeline.engine as ni_engine # Workflow, Node
 
-AWS = False
+AWS = True
 DEBUG = False
 if AWS is True:
     DATA_ROOT = '/data'
-    NUM_PROCS = 20
+    NUM_PROCS = 40
 else:
     DATA_ROOT = '/home/dave/Temp/nhw_test'
     NUM_PROCS = 4
