@@ -87,7 +87,7 @@ else:
     site_top_list = ('Amst', 'Sing', 'Utr')
     site_bot_list = ('GE3T', 'Singapore', 'Utrecht')
     # sub_list = ('100', '101', '102')
-    sub_list = tuple([str(i) for i in range(200)])
+    sub_list = tuple([str(i) for i in range(145)])
 
 # Infosource
 
@@ -150,9 +150,11 @@ preproc.connect([(infosource, selectfiles, [('site_top', 'site_top'),
                  (selectfiles, bias_correct_t1_fs_nucorrect, [('t1', 'in_file')]),
                  (bet_t1, bias_correct_t1_fs_nucorrect, [('mask_file', 'mask')]),                 
                  (selectfiles, ants_reg, [('t1', 'moving_image'),
-                                          ('t1_alt', 'fixed_image'),
-                                          ('t1_mask', 'moving_image_mask'),
-                                          ('t1_alt_mask', 'fixed_image_mask')]),
+                                          ('t1_alt', 'fixed_image')]),
+                 # (selectfiles, ants_reg, [('t1', 'moving_image'),
+                 #                          ('t1_alt', 'fixed_image'),
+                 #                          ('t1_mask', 'moving_image_mask'),
+                 #                          ('t1_alt_mask', 'fixed_image_mask')]),
                  (ants_reg, ants_warp_lesion, [('reverse_transforms', 'transforms')]),
                  (selectfiles, ants_warp_lesion, [('t1', 'reference_image'),
                                            ('lesion', 'input_image')]),
