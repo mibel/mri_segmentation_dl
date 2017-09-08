@@ -10,8 +10,14 @@ import nipype.interfaces.utility as ni_util # IdentityInterface
 import nipype.interfaces.io as ni_io # SelectFiles, DataSink
 import nipype.pipeline.engine as ni_engine # Workflow, Node
 
-DEBUG = True
-DATA_ROOT = '/data'
+AWS = False
+DEBUG = False
+if AWS is True:
+    DATA_ROOT = '/data'
+    NUM_PROCS = 20
+else:
+    DATA_ROOT = '/home/dave/Temp/nhw_test'
+    NUM_PROCS = 4
 experiment_dir = opj(DATA_ROOT, 'derivatives')
 output_dir = 'datasink'
 working_dir = 'wd'
@@ -72,21 +78,25 @@ copy_t1 = ni_engine.Node(ni_afni.Copy(outputtype='NIFTI_GZ'),
 
 
 # Manually defined lists for now
-site_top_list = ('Amst',)
-site_bot_list = ('GE3T',)
 
 if DEBUG is True:
+    site_top_list = ('Amst',)
+    site_bot_list = ('GE3T',)
     sub_list = ('100',)
 else: 
-    sub_list = ('100', '101', '102')
-
+    site_top_list = ('Amst', 'Sing', 'Utr')
+    site_bot_list = ('GE3T', 'Singapore', 'Utrecht')
+    # sub_list = ('100', '101', '102')
+    sub_list = tuple([str(i) for i in range(200)])
 
 # Infosource
+
 infosource = ni_engine.Node(ni_util.IdentityInterface(fields=['site_top', 'site_bot', 'subject_id']),
                   name="infosource")
 infosource.iterables = [('site_top', site_top_list),
                         ('site_bot', site_bot_list),
                         ('subject_id', sub_list)]
+# infosource = ni_engine.Node(ni_io.DataGrabber(), name='infosource')
 
 # SelectFiles
 t1_file = opj('wmh', '{site_top}', '{site_bot}', '{subject_id}', 'orig', '3DT1.nii.gz')
@@ -163,5 +173,4 @@ preproc.connect([(infosource, selectfiles, [('site_top', 'site_top'),
                  (copy_t1, datasink, [('out_file', 'preproc.@t1_base')]),
                  ])
 
-
-wk_run = preproc.run('MultiProc', plugin_args={'n_procs': 4})
+wk_run = preproc.run('MultiProc', plugin_args={'n_procs': NUM_PROCS})
