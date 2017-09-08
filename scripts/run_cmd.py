@@ -1,6 +1,5 @@
 #! /usr/bin/env python
 
-import cluster_utils as cluster
 import argparse
 import os
 import grp
@@ -33,7 +32,7 @@ def get_standard_parser():
 
 def parse_arguments():
     # Create argument parser
-    parser = cluster.utils.get_standard_parser()
+    parser = get_standard_parser()
     parser.add_argument('cmd', help='Script to launch',
                         type=str, nargs='+')
     # Parse arguments
