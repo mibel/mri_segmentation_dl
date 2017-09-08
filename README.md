@@ -10,6 +10,6 @@
 1. To launch a nipype based job you should use docker (miykael/nipype_level4 image has been already pulled).
 2. Also it's possible to launch a job using an (executable) python script from `./scripts/run_cmd.py` which automatically wrap command and attach volumes:
 ```
-python scripts/run_cmd.py echo hello world
+python scripts/run_cmd.py "echo \$FREESURFER_HOME"
 ```
 See also `run_cmd.py --help`

@@ -1,6 +1,34 @@
 #! /usr/bin/env python
 
 import cluster_utils as cluster
+import argparse
+import os
+import grp
+import getpass
+import warnings
+from subprocess import check_call
+
+
+GROUP_NAME = 'main_group'
+SHARED_DIR_PATH = '/data'
+
+
+def get_standard_parser():
+    parser = argparse.ArgumentParser()
+
+    # Positional mandatory arguments
+    parser.add_argument("-i", "--image", type=str, help='Docker image to use')
+    parser.add_argument("-e", "--docker_engine", type=str,
+                        help='docker or nvidia-docker')
+    parser.add_argument(
+        "-p", "--path", type=str,
+        help='path to pass to container, i.e. "/home/mibel/freesurfer"')
+    parser.add_argument(
+        "-pp", "--python_path", type=str,
+        help='pythonpath to pass to container, i.e. "/home/mibel/deep_pipe"')
+    parser.add_argument("-j", "--job_name_prefix", type=str,
+                        help='prefix of a job name')
+    return parser
 
 
 def parse_arguments():
@@ -17,6 +45,29 @@ def parse_arguments():
     return cmd, job_kwargs
 
 
+def get_system_names_ids():
+    user_id = os.getuid()
+    user_name = getpass.getuser()
+    try:
+        user_gid = grp.getgrnam(GROUP_NAME).gr_gid
+    except KeyError:
+        warnings.warn('Group {} isn\'t found'.format(GROUP_NAME))
+        user_gid = grp.getgrnam(user_name).gr_gid
+    return user_id, user_name, user_gid
+
+
+def run_job(cmd, image='miykael/nipype_level4:latest', python_path=None,
+            path=None, docker_engine='docker'):
+    user_id, user_name, user_gid = get_system_names_ids()
+    job_cmd = [
+        docker_engine, 'run', image, '/bin/bash', '-c',
+        "{}".format(cmd), '--user', '{}:{}'.format(user_id, user_gid),
+        '--volume', '/home/{0}:/home/{0}'.format(user_name),
+        '--volume', '{0}:{0}'.format(SHARED_DIR_PATH),
+    ]
+    check_call(job_cmd)
+
+
 if __name__ == "__main__":
     cmd, job_kwargs = parse_arguments()
-    cluster.run_job([' '.join(cmd)], **job_kwargs)
+    run_job(' '.join(cmd), **job_kwargs)
