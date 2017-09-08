@@ -1,0 +1,35 @@
+{
+  "IamFleetRole": "arn:aws:iam::871322256510:role/aws-ec2-spot-fleet-tagging-role",
+  "AllocationStrategy": "lowestPrice",
+  "TargetCapacity": 1,
+  "SpotPrice": "3.552",
+  "ValidFrom": "2017-09-07T23:19:35Z",
+  "ValidUntil": "2018-09-07T23:19:35Z",
+  "TerminateInstancesWithExpiration": true,
+  "LaunchSpecifications": [
+    {
+      "ImageId": "ami-a8d2d7ce",
+      "InstanceType": "m4.16xlarge",
+      "KeyName": "new_key",
+      "EbsOptimized": true,
+      "SpotPrice": "3.552",
+      "BlockDeviceMappings": [
+        {
+          "DeviceName": "/dev/sda1",
+          "Ebs": {
+            "DeleteOnTermination": true,
+            "VolumeType": "gp2",
+            "VolumeSize": 150,
+            "SnapshotId": "snap-0355cf671853bf871"
+          }
+        }
+      ],
+      "SecurityGroups": [
+        {
+          "GroupId": "sg-5c4fbf24"
+        }
+      ]
+    }
+  ],
+  "Type": "request"
+}
