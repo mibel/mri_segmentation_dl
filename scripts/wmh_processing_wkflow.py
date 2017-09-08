@@ -10,8 +10,14 @@ import nipype.interfaces.utility as ni_util # IdentityInterface
 import nipype.interfaces.io as ni_io # SelectFiles, DataSink
 import nipype.pipeline.engine as ni_engine # Workflow, Node
 
-DEBUG = True
-DATA_ROOT = '/data'
+AWS = True
+DEBUG = False
+if AWS is True:
+    DATA_ROOT = '/data'
+    NUM_PROCS = 40
+else:
+    DATA_ROOT = '/home/dave/Temp/nhw_test'
+    NUM_PROCS = 4
 experiment_dir = opj(DATA_ROOT, 'derivatives')
 output_dir = 'datasink'
 working_dir = 'wd'
@@ -72,38 +78,56 @@ copy_t1 = ni_engine.Node(ni_afni.Copy(outputtype='NIFTI_GZ'),
 
 
 # Manually defined lists for now
-site_top_list = ('Amst',)
-site_bot_list = ('GE3T',)
 
 if DEBUG is True:
+    site_top_list = ('Amst',)
+    site_bot_list = ('GE3T',)
     sub_list = ('100',)
 else: 
-    sub_list = ('100', '101', '102')
-
+    site_top_list = ('Amst', 'Sing', 'Utr')
+    site_bot_list = ('GE3T', 'Singapore', 'Utrecht')
+    # sub_list = ('100', '101', '102')
+    sub_list = tuple([str(i) for i in range(145)])
 
 # Infosource
+
 infosource = ni_engine.Node(ni_util.IdentityInterface(fields=['site_top', 'site_bot', 'subject_id']),
                   name="infosource")
 infosource.iterables = [('site_top', site_top_list),
                         ('site_bot', site_bot_list),
                         ('subject_id', sub_list)]
+# infosource = ni_engine.Node(ni_io.DataGrabber(), name='infosource')
 
 # SelectFiles
+
+# t1_file = opj('wmh', '{site_top}', '{site_bot}', '{subject_id}', 'orig', '3DT1.nii.gz')
+# t1_mask = opj('wmh', '{site_top}', '{site_bot}', '{subject_id}', 'orig', '3DT1_mask.nii.gz')
+# t1_file_alt = opj('wmh', '{site_top}', '{site_bot}', '{subject_id}', 'orig', 'T1.nii.gz')
+# t1_alt_mask = opj('wmh', '{site_top}', '{site_bot}', '{subject_id}', 'orig', 'T1_mask.nii.gz')
+# flair_file = opj('wmh', '{site_top}', '{site_bot}',
+#                  '{subject_id}', 'orig', 'FLAIR.nii.gz')
+# lesion_file = opj('wmh', '{site_top}', '{site_bot}',
+#                   '{subject_id}', 'wmh.nii.gz')
+#
+# templates = {'t1': t1_file,
+#              't1_mask': t1_mask,
+#              't1_alt': t1_file_alt,
+#              't1_alt_mask': t1_alt_mask,
+#              'flair': flair_file,
+#              'lesion': lesion_file}
+
 t1_file = opj('wmh', '{site_top}', '{site_bot}', '{subject_id}', 'orig', '3DT1.nii.gz')
-t1_mask = opj('wmh', '{site_top}', '{site_bot}', '{subject_id}', 'orig', '3DT1_mask.nii.gz')
 t1_file_alt = opj('wmh', '{site_top}', '{site_bot}', '{subject_id}', 'orig', 'T1.nii.gz')
-t1_alt_mask = opj('wmh', '{site_top}', '{site_bot}', '{subject_id}', 'orig', 'T1_mask.nii.gz')
 flair_file = opj('wmh', '{site_top}', '{site_bot}',
                  '{subject_id}', 'orig', 'FLAIR.nii.gz')
 lesion_file = opj('wmh', '{site_top}', '{site_bot}',
                   '{subject_id}', 'wmh.nii.gz')
 
 templates = {'t1': t1_file,
-             't1_mask': t1_mask,
              't1_alt': t1_file_alt,
-             't1_alt_mask': t1_alt_mask,
              'flair': flair_file,
              'lesion': lesion_file}
+
 selectfiles = ni_engine.Node(ni_io.SelectFiles(templates,
                                                base_directory=DATA_ROOT,
                                                sort_filelist=True),
@@ -140,9 +164,11 @@ preproc.connect([(infosource, selectfiles, [('site_top', 'site_top'),
                  (selectfiles, bias_correct_t1_fs_nucorrect, [('t1', 'in_file')]),
                  (bet_t1, bias_correct_t1_fs_nucorrect, [('mask_file', 'mask')]),                 
                  (selectfiles, ants_reg, [('t1', 'moving_image'),
-                                          ('t1_alt', 'fixed_image'),
-                                          ('t1_mask', 'moving_image_mask'),
-                                          ('t1_alt_mask', 'fixed_image_mask')]),
+                                          ('t1_alt', 'fixed_image')]),
+                 # (selectfiles, ants_reg, [('t1', 'moving_image'),
+                 #                          ('t1_alt', 'fixed_image'),
+                 #                          ('t1_mask', 'moving_image_mask'),
+                 #                          ('t1_alt_mask', 'fixed_image_mask')]),
                  (ants_reg, ants_warp_lesion, [('reverse_transforms', 'transforms')]),
                  (selectfiles, ants_warp_lesion, [('t1', 'reference_image'),
                                            ('lesion', 'input_image')]),
@@ -163,5 +189,4 @@ preproc.connect([(infosource, selectfiles, [('site_top', 'site_top'),
                  (copy_t1, datasink, [('out_file', 'preproc.@t1_base')]),
                  ])
 
-
-wk_run = preproc.run('MultiProc', plugin_args={'n_procs': 4})
+wk_run = preproc.run('MultiProc', plugin_args={'n_procs': NUM_PROCS})
