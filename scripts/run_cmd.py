@@ -60,11 +60,11 @@ def run_job(cmd, image='miykael/nipype_level4:latest', python_path=None,
     user_id, user_name, user_gid = get_system_names_ids()
     job_cmd = [
         docker_engine, 'run', image, '/bin/bash', '-c',
-        "{}".format(cmd), '--user={}:{}'.format(user_id, user_gid),
-        '--volume=/home/{0}:/home/{0}'.format(user_name),
-        '--volume={0}:{0}'.format(SHARED_DIR_PATH),
+        "{}".format(cmd), '--user {}:{}'.format(user_id, user_gid),
+        '--volume /home/{0}:/home/{0}'.format(user_name),
+        '--volume {0}:{0}'.format(SHARED_DIR_PATH),
     ]
-    check_call(job_cmd)
+    check_call(' '.join(job_cmd), shell=True)
 
 
 if __name__ == "__main__":
