@@ -1,24 +1,10 @@
-# list of files
-# pre
-#   - brainmask_T1_mask.nii.gz
-#   - FLAIR.nii.gz
-#   - T1.nii.gz
-# FLAIR_trans.nii.gz
-# T1w_bias_corrected_ants_n4_labeled.nii.gz
-# T1w_brain_mask.nii.gz
-# lesion_mask_t1.nii.gz
-# T1w_bias_corrected_ants_n4.nii.gz
-# T1w_brain.nii.gz
-# T1w_base.nii.gz
-# T1w_bias_corrected_fs_nucorrect.nii.gz
-
 import os
 from os.path import join as op_join
 from shutil import copyfile
 
 
-WMH_ORIG = '/home/mibel/wmh'
-WMH_PREPROC = '/home/mibel/wmh_preproc'
+WMH_ORIG = '/home/mikhail/nhw/data/wmh'
+WMH_PREPROC = '/home/mikhail/nhw/data/derivatives/datasink/preproc'
 
 if __name__ == "__main__":
     cites = os.listdir(WMH_ORIG)
